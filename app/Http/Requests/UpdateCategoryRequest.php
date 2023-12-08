@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
-class UpdateQuizRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,10 +27,9 @@ class UpdateQuizRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'name' => 'unique:quizzes,name,' . $id . '|max:100|min:4',
+            'title' => 'unique:categories,title,' . $id . '|max:100|min:4',
             'description' => 'max:250',
-            'slug' => 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/i|unique:quizzes,slug,' . $id,
-            'category_id' => 'integer|exists:categories,id'
+            'slug' => 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/i|unique:categories,slug,' . $id
         ];
     }
 }
