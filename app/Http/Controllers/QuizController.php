@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Log;
 
 class QuizController extends BaseController
 {
@@ -19,18 +20,21 @@ class QuizController extends BaseController
     public function index(): Collection
     {
        return Quiz::all();
+
+       // ca fonctionne aussi pour récupérer les catégories associées
+       /*return Quiz::with('category')->get();*/
     }
 
    public function store(StoreQuizRequest $storeQuizRequest): Response
    {
-       // ne fonctionne dans postman qu'en "form-data" key/value, pas en "raw"
-        // Validation des champs reçus (regarder FormValidation class dans la doc)
+        // Validation des champs reçus (regarder FormValidation class dans la doc) -- done
        try {
            $validatedData = $storeQuizRequest->validated();
+           Log::info($validatedData);
            Quiz::create($validatedData);
            return response('Le quiz a été créé', 200);
        } catch (\Exception $e) {
-           return response("une erreur est survenu" . $e->getMessage(), 500);
+           return response("une erreur est survenue" . $e->getMessage(), 500);
        }
     }
 
@@ -50,10 +54,18 @@ class QuizController extends BaseController
 
     public function delete($id): Response
     {
-        // Suppression du model
-        Quiz::where('id', $id)->delete();
+        // Suppression du model // fonctionne
+        /*Quiz::where('id', $id)->delete();*/
 
-        return response('Le quiz a été supprimé', 200);
+        try{
+            Quiz::findOrFail($id)->delete();
+            return response('Le quiz a été supprimé', 200);
+        } catch (ModelNotFoundException $e) {
+            return response("Le quiz n'existe pas", 404);
+        } catch (\Exception $e) {
+            return response("Une erreur est survenue lors de la suppression du quiz", 500);
+        }
+
     }
 
 }

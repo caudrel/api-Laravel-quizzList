@@ -3,13 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Category;
-use App\Models\Quiz;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Quiz>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
  */
-class QuizFactory extends Factory
+class CategoryFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,12 +16,12 @@ class QuizFactory extends Factory
      * @return array<string, mixed>
      */
 
-    protected $model = Quiz::class;
+    protected $model = Category::class;
 
     public function definition(): array
     {
         return [
-            'name' => fake()->words(3, true),
+            'title' => fake()->words(1, true),
             'description' => fake()->sentence(),
             'slug' => fake()->unique()->slug(),
         ];

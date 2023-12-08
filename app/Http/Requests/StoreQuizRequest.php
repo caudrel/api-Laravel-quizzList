@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use Illuminate\Support\Facades\Log;
 
 class StoreQuizRequest extends FormRequest
 {
@@ -26,7 +26,8 @@ class StoreQuizRequest extends FormRequest
         return [
             'name' => 'required|unique:quizzes|max:100|min:4',
             'description' => 'required|max:250',
-            'slug' => 'required|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/i|unique:quizzes'
+            'slug' => 'required|regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/i|unique:quizzes',
+            'category_id' => 'integer|exists:categories,id'
         ];
     }
 }

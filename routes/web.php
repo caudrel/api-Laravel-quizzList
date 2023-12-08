@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\QuizController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,11 +20,12 @@ Route::get('/', function () {
 });
 
 Route::post('/quiz', [QuizController::class, 'store']);
-
 Route::get('/quiz', [QuizController::class, 'index']);
-
 Route::patch('/quiz/{id}', [QuizController::class, 'update']);
-
 Route::delete('/quiz/{id}',  [QuizController::class, 'delete']);
 
-
+Route::post('/category', [CategoryController::class, 'store']);
+Route::get('/category', [CategoryController::class, 'index']);
+Route::get('/category/{id}', [CategoryController::class, 'getQuizzes']);
+Route::patch('/category/{id}', [CategoryController::class, 'update']);
+Route::delete('/category/{id}', [CategoryController::class, 'delete']);
