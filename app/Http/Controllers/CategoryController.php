@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\Category\CategoryCollection;
+use App\Http\Resources\Category\CategoryResource;
 use App\Models\Category;
 use App\Models\Quiz;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,20 +21,22 @@ class CategoryController extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function index(Request $request): CategoryCollection
+    public function index(): CategoryCollection
     {
         return new CategoryCollection(
             Category::with('quizzes')->get()
         );
     }
 
-    public function getQuizzes($id): Collection|Response
+    public function getQuizzes($slug): CategoryCollection|Response
     {
         try {
-            return Category::findOrFail($id)->quizzes;
+            return new CategoryCollection(
+                Category::where('slug', $slug)->with('quizzes')->get()
+            );
         } catch (ModelNotFoundException $e) {
             return response("La catégory n'existe pas", 404);
-        } catch (\Exception) {
+        } catch (\Exception $e) {
             Log::error('Erreur : ' . $e->getMessage(), ['exception' => $e]);
             return response("Une erreur est survenue lors de la récupération des données", 500);
         }
@@ -50,11 +53,11 @@ class CategoryController extends BaseController
         }
     }
 
-    public function update(UpdateCategoryRequest $updateCategoryRequest, $id): Response
+    public function update(UpdateCategoryRequest $updateCategoryRequest, $slug): Response
     {
         Log::alert('juste pour voir si ça marche');
         try {
-            $category = Category::findOrFail($id);
+            $category = Category::where('slug', $slug)->firstOrFail();
             $category->update($updateCategoryRequest->validated());
             return response("La catégorie {$category->title} a été mise à jour", 200);
         } catch (ModelNotFoundException $e) {
@@ -66,13 +69,14 @@ class CategoryController extends BaseController
     }
 
 
-    public function delete($id): Response
+    public function delete($slug): Response
     {
         try {
-            Category::findOrFail($id)->delete();
-
+            $id = Category::where('slug', $slug)->firstOrFail()->id;
             Quiz::where('category_id', $id)
                 ->update(['category_id' => null]);
+
+            Category::where('slug', $slug)->firstOrFail()->delete();
 
             return response('La catégorie a été supprimée et les quizzes associés ne sont plus liés.', 200);
         } catch (ModelNotFoundException $e) {

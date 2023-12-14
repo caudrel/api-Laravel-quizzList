@@ -36,10 +36,10 @@ class QuizController extends Controller
         }
     }
 
-    public function update(UpdateQuizRequest $updateQuizRequest, $id): Response
+    public function update(UpdateQuizRequest $updateQuizRequest, $slug): Response
     {
         try {
-            $quiz = Quiz::findOrFail($id);
+            $quiz = Quiz::where('slug', $slug)->firstOrFail();
             $quiz->update($updateQuizRequest->validated());
             return response("Le quiz {$quiz->name} a été mis à jour", 200);
         } catch (ModelNotFoundException $e) {
@@ -50,10 +50,10 @@ class QuizController extends Controller
         }
     }
 
-    public function delete($id): Response
+    public function delete($slug): Response
     {
         try {
-            Quiz::findOrFail($id)->delete();
+            Quiz::where('slug', $slug)->firstOrFail()->delete();
             return response('Le quiz a été supprimé', 200);
         } catch (ModelNotFoundException $e) {
             return response("Le quiz n'existe pas", 404);
